@@ -11,9 +11,11 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/_app'
+import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppCandidaturesIndexRouteImport } from './routes/_app/candidatures.index'
 import { Route as AppCandidaturesIdRouteImport } from './routes/_app/candidatures.$id'
 import { Route as AppFichesDePosteIndexRouteImport } from './routes/_app/fiches-de-poste.index'
+import { Route as AppFichesDePosteIdRouteImport } from './routes/_app/fiches-de-poste.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -23,6 +25,11 @@ const IndexRoute = IndexRouteImport.update({
 const AppRoute = AppRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
 } as any)
 const AppCandidaturesIndexRoute = AppCandidaturesIndexRouteImport.update({
   id: '/candidatures/',
@@ -39,16 +46,25 @@ const AppFichesDePosteIndexRoute = AppFichesDePosteIndexRouteImport.update({
   path: '/fiches-de-poste/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppFichesDePosteIdRoute = AppFichesDePosteIdRouteImport.update({
+  id: '/fiches-de-poste/$id',
+  path: '/fiches-de-poste/$id',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof AppDashboardRoute
   '/candidatures/$id': typeof AppCandidaturesIdRoute
+  '/fiches-de-poste/$id': typeof AppFichesDePosteIdRoute
   '/candidatures/': typeof AppCandidaturesIndexRoute
   '/fiches-de-poste/': typeof AppFichesDePosteIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof AppDashboardRoute
   '/candidatures/$id': typeof AppCandidaturesIdRoute
+  '/fiches-de-poste/$id': typeof AppFichesDePosteIdRoute
   '/candidatures': typeof AppCandidaturesIndexRoute
   '/fiches-de-poste': typeof AppFichesDePosteIndexRoute
 }
@@ -56,20 +72,36 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
+  '/_app/dashboard': typeof AppDashboardRoute
   '/_app/candidatures/$id': typeof AppCandidaturesIdRoute
+  '/_app/fiches-de-poste/$id': typeof AppFichesDePosteIdRoute
   '/_app/candidatures/': typeof AppCandidaturesIndexRoute
   '/_app/fiches-de-poste/': typeof AppFichesDePosteIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/candidatures/$id' | '/candidatures/' | '/fiches-de-poste/'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/candidatures/$id'
+    | '/fiches-de-poste/$id'
+    | '/candidatures/'
+    | '/fiches-de-poste/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/candidatures/$id' | '/candidatures' | '/fiches-de-poste'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/candidatures/$id'
+    | '/fiches-de-poste/$id'
+    | '/candidatures'
+    | '/fiches-de-poste'
   id:
     | '__root__'
     | '/'
     | '/_app'
+    | '/_app/dashboard'
     | '/_app/candidatures/$id'
+    | '/_app/fiches-de-poste/$id'
     | '/_app/candidatures/'
     | '/_app/fiches-de-poste/'
   fileRoutesById: FileRoutesById
@@ -95,6 +127,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/candidatures/': {
       id: '/_app/candidatures/'
       path: '/candidatures'
@@ -116,17 +155,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppFichesDePosteIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/fiches-de-poste/$id': {
+      id: '/_app/fiches-de-poste/$id'
+      path: '/fiches-de-poste/$id'
+      fullPath: '/fiches-de-poste/$id'
+      preLoaderRoute: typeof AppFichesDePosteIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppDashboardRoute: typeof AppDashboardRoute
   AppCandidaturesIdRoute: typeof AppCandidaturesIdRoute
+  AppFichesDePosteIdRoute: typeof AppFichesDePosteIdRoute
   AppCandidaturesIndexRoute: typeof AppCandidaturesIndexRoute
   AppFichesDePosteIndexRoute: typeof AppFichesDePosteIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppDashboardRoute: AppDashboardRoute,
   AppCandidaturesIdRoute: AppCandidaturesIdRoute,
+  AppFichesDePosteIdRoute: AppFichesDePosteIdRoute,
   AppCandidaturesIndexRoute: AppCandidaturesIndexRoute,
   AppFichesDePosteIndexRoute: AppFichesDePosteIndexRoute,
 }
