@@ -44,7 +44,7 @@ function Nugget() {
 export default function Crystal() {
   return (
     <Canvas camera={{ position: [0, 0, 6], fov: 45 }} dpr={[1, 1.5]} gl={{ alpha: true, antialias: true }}>
-      <ambientLight intensity={0.35} />
+      <ambientLight intensity={0.9} /><hemisphereLight args={["#ffffff", "#3a3020", 1.2]} />
       <directionalLight position={[4, 5, 3]} intensity={2.2} color="#ffffff" />
       <pointLight position={[-4, -2, 2]} intensity={30} color="#e3c06f" />
       <pointLight position={[3, -3, -2]} intensity={25} color="#8fa8d8" />

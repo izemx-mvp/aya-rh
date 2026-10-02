@@ -8,3 +8,9 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+## Architecture
+- All demo data lives in src/data/mock.ts (seeded) and is mutated only via src/lib/store.ts so every page shows consistent numbers.
+- Every table/list uses src/components/app/DataTable.tsx (URL-persisted pagination/filters) — never build ad hoc tables.
+- Authenticated pages live under the pathless `_app` layout (shell, MiningScene, assistant); the login is `/`.
+- Simple module pages compose ModulePage/ActionDialog from src/components/app/Module.tsx.
