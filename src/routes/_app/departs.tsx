@@ -1,3 +1,4 @@
+import { useStore } from "@/lib/store";
 import { closeDeparture, createReplacement, startDeparture } from "@/lib/actions";
 import { toast } from "sonner";
 import { createFileRoute } from "@tanstack/react-router";
@@ -28,6 +29,7 @@ function Detail({ d }: { d: (typeof departures)[number] }) {
 }
 
 function Page() {
+  useStore();
   return (
     <ModulePage title="Départs" subtitle={`${KPI.departures} départs sur 12 mois · turnover ${KPI.turnover}`}
       actions={[{ label: "Initier un départ", primary: true, steps: [[{ name: "emp", label: "Collaborateur", required: true }, { name: "type", label: "Type", type: "select", options: ["Démission", "Fin de contrat", "Rupture conventionnelle", "Licenciement", "Retraite"], required: true }], [{ name: "last", label: "Dernier jour", type: "date", required: true }, { name: "notice", label: "Préavis (jours)", type: "number", def: "30" }]], confirm: "Lancer", cascade: true, onSubmit: (v) => { const e = employees.find((x) => x.status !== "Parti" && (x.name.toLowerCase().includes(v.emp.toLowerCase()) || x.matricule === v.emp)); if (!e) { toast.error(`Collaborateur « ${v.emp} » introuvable`); return; } startDeparture(e.id, v.type, new Date(v.last).toISOString()); } }, { label: "Formulaire d'entretien de sortie", fields: [{ name: "r", label: "Motif principal", type: "select", options: ["Rémunération", "Évolution", "Éloignement", "Management", "Conditions de travail", "Autre"], required: true }, { name: "n", label: "Satisfaction globale (1-5)", type: "number" }, { name: "c", label: "Commentaires", type: "textarea" }], success: "Entretien de sortie enregistré" }]}>
