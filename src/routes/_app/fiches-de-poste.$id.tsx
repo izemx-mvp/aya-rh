@@ -7,7 +7,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Input } from "@/components/ui/input";
 import { PageHeader, StatusBadge, ScoreRing, Glass, Avatar, AiDisclaimer } from "@/components/app/kit";
 import { DetailGrid } from "@/components/app/DataTable";
-import { jobDescs, employees, positions, fmtDate } from "@/data/mock";
+import { jobDescs, employees, positions, fmtDate, jobRequests, jobAds, ficheCerts, candidates } from "@/data/mock";
+import { RelatedItems, JobChain } from "@/components/app/Links";
 import { setJobDescStatus, useStore } from "@/lib/store";
 import { exportPdf } from "@/lib/pdf";
 import { genSection, SECTIONS } from "./fiches-de-poste.index";
@@ -49,6 +50,15 @@ function Page() {
           <Button variant="outline" size="sm" onClick={() => setArchive(true)}><Archive className="mr-1 h-4 w-4" />Archiver</Button>
           {j.status !== "Révisée" && <Button size="sm" className="bg-gold-gradient text-primary-foreground" onClick={() => setJobDescStatus(j.id, j.status === "À réviser" ? "En validation" : "Révisée")}><Check className="mr-1 h-4 w-4" />{j.status === "À réviser" ? "Envoyer en validation" : "Approuver"}</Button>}
         </>} />
+      {(() => { const d = jobRequests.find((x) => x.ficheId === j.id && x.status === "Publiée"); return d ? <JobChain demandeId={d.id} current="Fiche" /> : null; })()}
+      {jobAds.some((a) => a.status === "En ligne" && jobRequests.find((d) => d.id === a.demandeId)?.ficheId === j.id && a.ficheVersion !== j.version) && <p className="mb-4 rounded-xl border border-warning/40 bg-warning/10 p-3 text-sm text-warning">La fiche a été mise à jour depuis la création de l'annonce — l'annonce et la grille de scoring liées affichent « Critères différents de la fiche ».</p>}
+      <div className="mb-5"><RelatedItems items={[
+        ...jobRequests.filter((d) => d.ficheId === j.id).map((d) => ({ group: "Demandes de poste", ref: d.id, label: `${d.title} · ${d.site}`, status: d.status, to: "/demandes-de-poste?dp.mode=table" })),
+        ...jobAds.filter((a) => jobRequests.find((d) => d.id === a.demandeId)?.ficheId === j.id).map((a) => ({ group: "Annonces", ref: a.id, label: a.title, status: a.status, to: "/offres" })),
+        ...candidates.filter((c) => jobRequests.find((d) => d.id === c.demandeId)?.ficheId === j.id && c.status !== "Refusée").slice(0, 8).map((c) => ({ group: "Candidatures actives", ref: c.ref, label: c.name, status: c.status, to: `/candidatures/${c.id}` })),
+        ...employees.filter((e) => e.ficheId === j.id && e.status !== "Parti").map((e) => ({ group: "Titulaires", ref: e.matricule, label: e.name, status: e.status, to: `/employes/${e.id}` })),
+        ...(ficheCerts[j.id] ?? []).map((t) => ({ group: "Habilitations requises", ref: t, to: "/habilitations" })),
+      ]} /></div>
       <div className="grid gap-5 xl:grid-cols-[1fr_340px]">
         <div className="space-y-3">
           {SECTIONS.map((s) => (

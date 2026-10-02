@@ -1,3 +1,4 @@
+import { generateAttestation } from "@/lib/actions";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { Sparkles, Star } from "lucide-react";
@@ -25,7 +26,7 @@ function Detail({ r }: { r: R }) {
       <div className="flex flex-wrap gap-2"><Button size="sm" variant="outline" onClick={() => setReply(`Bonjour ${r.emp.split(" ")[0]},\n\nVous trouverez ci-joint votre ${r.type.toLowerCase()}. N'hésitez pas à nous contacter pour toute question.\n\nCordialement,\nService RH`)}><Sparkles className="mr-1 h-3 w-3 text-gold" />Rédiger une réponse</Button><select className="rounded-md border border-input bg-background px-2 text-xs" onChange={(x) => setReply(x.target.value)} defaultValue=""><option value="" disabled>Modèles de réponse</option><option>Votre demande est en cours de traitement.</option><option>Merci de nous transmettre un justificatif.</option></select></div>
       {reply && <div className="rounded-lg bg-gold/5 p-2 text-sm"><Typing text={reply} /></div>}
       <Textarea value={reply} onChange={(x) => setReply(x.target.value)} placeholder="Votre réponse…" />
-      {r.type.startsWith("Attestation") && <Button size="sm" variant="outline" onClick={() => exportPdf(`${r.type} — ${r.emp}`, [["Attestation", `Nous attestons que ${e.name}, matricule ${e.matricule}, occupe le poste de ${e.job} depuis le ${fmtDate(e.hireDate)}${r.type.includes("salaire") ? ", pour une rémunération conforme à son contrat" : ""}.`]])}>Générer le document PDF</Button>}
+      {r.type.startsWith("Attestation") && !["Résolue", "Clôturée"].includes(r.status) && <Button size="sm" variant="outline" onClick={() => { generateAttestation(r.id); exportPdf(`${r.type} — ${r.emp}`, [["Attestation", `Nous attestons que ${e.name}, matricule ${e.matricule}, occupe le poste de ${e.job} depuis le ${fmtDate(e.hireDate)}${r.type.includes("salaire") ? ", pour une rémunération conforme à son contrat" : ""}.`]]); }}>Générer le document (modèle Documents)</Button>}
       <div className="flex gap-2"><Button size="sm" disabled={!reply} onClick={() => { r.status = "Résolue"; emit(); toast.success("Réponse validée et envoyée"); }}>Valider et envoyer</Button><Button size="sm" variant="outline" onClick={() => { r.status = "Clôturée"; emit(); toast("Demande clôturée"); }}>Clôturer</Button></div>
       {["Résolue", "Clôturée"].includes(r.status) && <div className="flex items-center gap-1 text-sm">Satisfaction : {[1, 2, 3, 4, 5].map((n) => <button key={n} onClick={() => setRating(n)} aria-label={`${n} étoiles`}><Star className={n <= rating ? "h-4 w-4 fill-gold text-gold" : "h-4 w-4"} /></button>)}</div>}
       <AiDisclaimer />

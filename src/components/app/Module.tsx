@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export type Field = { name: string; label: string; type?: "text" | "textarea" | "select" | "date" | "number"; options?: string[]; required?: boolean; def?: string };
-export type ActionDef = { label: string; primary?: boolean; icon?: ReactNode; title?: string; description?: string; fields?: Field[]; steps?: Field[][]; confirm?: string; success?: string; onSubmit?: (v: Record<string, string>) => void; ai?: string; celebrate?: boolean; run?: () => void };
+export type ActionDef = { label: string; primary?: boolean; icon?: ReactNode; title?: string; description?: string; fields?: Field[]; steps?: Field[][]; confirm?: string; success?: string; onSubmit?: (v: Record<string, string>) => void; ai?: string; celebrate?: boolean; run?: () => void; cascade?: boolean };
 
 export function ActionDialog({ a, open, onOpenChange }: { a: ActionDef; open: boolean; onOpenChange: (o: boolean) => void }) {
   const steps = a.steps ?? [a.fields ?? []];
@@ -22,7 +22,7 @@ export function ActionDialog({ a, open, onOpenChange }: { a: ActionDef; open: bo
   const isRecap = a.steps && step === steps.length;
   const validate = (fs: Field[]) => fs.filter((f) => f.required && !(v[f.name] ?? f.def)).map((f) => `« ${f.label} » est obligatoire`);
   const close = () => { onOpenChange(false); setStep(0); setV({}); setErrs([]); };
-  const submit = () => { const e = steps.flatMap(validate); if (e.length) return setErrs(e); a.onSubmit?.(Object.fromEntries(steps.flat().map((f) => [f.name, v[f.name] ?? f.def ?? ""]))); close(); toast.success(a.success ?? "Enregistré", { duration: 6000, action: { label: "Annuler", onClick: () => toast("Action annulée") } }); if (a.celebrate) confetti(); };
+  const submit = () => { const e = steps.flatMap(validate); if (e.length) return setErrs(e); a.onSubmit?.(Object.fromEntries(steps.flat().map((f) => [f.name, v[f.name] ?? f.def ?? ""]))); close(); if (!a.cascade) toast.success(a.success ?? "Enregistré", { duration: 6000, action: { label: "Annuler", onClick: () => toast("Action annulée") } }); if (a.celebrate) confetti(); };
   return (
     <Dialog open={open} onOpenChange={(o) => (o ? onOpenChange(true) : close())}>
       <DialogContent className="max-h-[90vh] max-w-xl overflow-y-auto">

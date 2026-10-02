@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { candidates, posById, RECRUITERS, employees } from "@/data/mock";
 import { setCandidateStatus } from "@/lib/store";
+import { sendProposition, scheduleInterview } from "@/lib/actions";
 import { confetti, Avatar } from "@/components/app/kit";
 import { Sparkles, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -52,7 +53,7 @@ export function ScheduleDialog({ ids, open, onOpenChange, onDone }: { ids: strin
         {step === 3 && <div className="rounded-lg border border-border bg-muted/40 p-3 text-xs whitespace-pre-wrap">{`Objet : Invitation à un entretien — ${pos?.title}\n\nBonjour ${c?.name},\n\nNous avons le plaisir de vous inviter à un entretien le ${slots[Math.max(0, slot)]} (${mode}).\nIntervenants : ${parts.join(", ")}.\n\nCordialement,\nL'équipe RH AYA`}</div>}
         <DialogFooter>
           {step > 0 && <Button variant="outline" onClick={() => setStep(step - 1)}>Précédent</Button>}
-          {step < 3 ? <Button disabled={step === 2 && slot < 0} onClick={() => setStep(step + 1)}>Suivant</Button> : <Button onClick={() => { setCandidateStatus(ids, "Entretien", "Entretien planifié"); close(); onDone?.(); }}>Envoyer les invitations</Button>}
+          {step < 3 ? <Button disabled={step === 2 && slot < 0} onClick={() => setStep(step + 1)}>Suivant</Button> : <Button onClick={() => { const off = [1, 3, 7][Math.max(0, slot)]; scheduleInterview(ids, new Date(Date.now() + off * 864e5).toISOString(), slots[Math.max(0, slot)].split(" ")[1]); close(); onDone?.(); }}>Envoyer les invitations</Button>}
         </DialogFooter>
       </DialogContent>
     </Dialog>
@@ -65,7 +66,7 @@ export function OfferDialog({ id, open, onOpenChange }: { id: string; open: bool
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
-        <DialogHeader><DialogTitle>Envoyer une offre à {c.name}</DialogTitle><DialogDescription>{pos.title} · {pos.site}</DialogDescription></DialogHeader>
+        <DialogHeader><DialogTitle>Envoyer une proposition d'embauche à {c.name}</DialogTitle><DialogDescription>{pos.title} · {pos.site}</DialogDescription></DialogHeader>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="space-y-3">
             <div><label className="text-xs font-medium">Salaire mensuel brut (MAD) *</label><Input value={salary} onChange={(e) => setSalary(e.target.value.replace(/\D/g, ""))} /></div>
@@ -74,13 +75,13 @@ export function OfferDialog({ id, open, onOpenChange }: { id: string; open: bool
           </div>
           <div className="rounded-lg border border-border bg-card p-4 text-xs leading-relaxed">
             <img src="/aya-logo.png" alt="" className="mb-3 h-8" />
-            <p className="font-semibold">Lettre d'offre</p>
+            <p className="font-semibold">Proposition d'embauche</p><p className="text-[10px] text-muted-foreground">Modèle Documents · variables issues de la fiche, de la demande et du candidat</p>
             <p className="mt-2">Madame, Monsieur {c.name},</p>
             <p className="mt-2">Nous avons le plaisir de vous proposer le poste de <b>{pos.title}</b> à {pos.site}, en {contract}, à compter du {new Date(start).toLocaleDateString("fr-FR")}, pour une rémunération mensuelle brute de <b>{Number(salary).toLocaleString("fr-FR")} MAD</b>.</p>
             <p className="mt-2">Mme Baroudi, DRH</p>
           </div>
         </div>
-        <DialogFooter><Button variant="ghost" onClick={() => onOpenChange(false)}>Annuler</Button><Button disabled={!salary} onClick={() => { setCandidateStatus([id], "Offre", "Offre envoyée"); onOpenChange(false); confetti(); }}>Envoyer l'offre</Button></DialogFooter>
+        <DialogFooter><Button variant="ghost" onClick={() => onOpenChange(false)}>Annuler</Button><Button disabled={!salary} onClick={() => { sendProposition(id, Number(salary), new Date(start).toISOString()); onOpenChange(false); }}>Envoyer la proposition</Button></DialogFooter>
       </DialogContent>
     </Dialog>
   );
