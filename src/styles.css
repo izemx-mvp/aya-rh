@@ -227,3 +227,44 @@
 @media print {
   .no-print { display: none !important; }
 }
+
+/* ===== Barres de défilement AYA (or & argent) ===== */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(0.78 0.12 82 / 45%) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, oklch(0.78 0.12 82 / 55%), oklch(0.82 0.01 250 / 40%));
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background 0.3s var(--ease);
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, oklch(0.82 0.12 82 / 85%), oklch(0.86 0.01 250 / 65%));
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+.light * {
+  scrollbar-color: oklch(0.64 0.13 75 / 50%) transparent;
+}
+.light *::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, oklch(0.64 0.13 75 / 55%), oklch(0.55 0.015 250 / 40%));
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+.light *::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, oklch(0.6 0.13 75 / 85%), oklch(0.5 0.015 250 / 65%));
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
