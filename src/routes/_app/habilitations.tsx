@@ -25,6 +25,7 @@ function Page() {
   const comp = SITES.map((s) => { const hs = habilitations.filter((h) => empById(h.empId)?.site === s); return { s, rate: Math.round((hs.filter((h) => h.status === "Valide" || h.status === "Expire ≤ 90 j").length / Math.max(1, hs.length)) * 1000) / 10 }; });
   const h = cell && habilitations.find((x) => x.empId === cell.emp && x.type === cell.type);
   return (
+    <>
     <ModulePage title="Habilitations & HSE" subtitle="Suivi critique de la conformité sur sites miniers"
       kpis={[{ label: "Expirent sous 60 j", value: KPI.habs.expiring }, { label: "Déjà expirées", value: KPI.habs.expired }, ...comp.slice(0, 3).map((c) => ({ label: `Conformité ${c.s}`, value: c.rate, decimals: 1, suffix: " %" }))]}
       actions={[{ label: "Rapport de conformité PDF", primary: true, run: () => exportPdf("Rapport de conformité HSE par site", comp.map((c) => [c.s, `Taux de conformité : ${c.rate} %`] as [string, string]).concat([["Synthèse", `${KPI.habs.expiring} habilitations expirent sous 60 jours ; ${KPI.habs.expired} sont expirées.`]])) }]}
@@ -40,13 +41,8 @@ function Page() {
           columns={[{ key: "emp", header: "Collaborateur" }, { key: "site", header: "Site" }, { key: "type", header: "Habilitation" }, { key: "expires", header: "Échéance", render: (r) => fmtDate(r.expires) }, { key: "status", header: "Statut", render: (r) => <StatusBadge label={r.status} /> }, { key: "owner", header: "Responsable" }]} /> },
         { label: "Aptitude médicale", content: <DataTable id="med" rows={people.map((e, i) => ({ id: e.id, name: e.name, site: e.site, last: new Date(Date.now() - (i % 300) * 864e5).toISOString(), next: new Date(Date.now() + (65 - (i % 300)) * 864e5).toISOString(), result: i % 23 === 0 ? "Apte avec restrictions" : i % 97 === 0 ? "Inapte" : "Apte" }))} columns={[{ key: "name", header: "Collaborateur" }, { key: "site", header: "Site" }, { key: "last", header: "Dernière visite", render: (r) => fmtDate(r.last) }, { key: "next", header: "Prochaine visite", render: (r) => fmtDate(r.next) }, { key: "result", header: "Résultat", render: (r) => <StatusBadge label={r.result} /> }]} filters={[{ key: "result", label: "Résultat", options: ["Apte", "Apte avec restrictions", "Inapte"] }]} /> },
         { label: "Conformité par site", content: <Section title="Taux de conformité">{comp.map((c) => <div key={c.s} className="mb-3 flex items-center gap-3"><span className="w-28 text-sm">{c.s}</span><div className="h-3 flex-1 rounded-full bg-muted"><div className="h-3 rounded-full bg-success" style={{ width: `${c.rate}%` }} /></div><b className="w-14 text-right tnum">{c.rate} %</b></div>)}</Section> },
-      ]}>
-    </ModulePage>
+      ]} />
+      <Sheet open={!!cell} onOpenChange={(o) => !o && setCell(null)}><SheetContent className="glass">{cell && <><SheetHeader><SheetTitle>{cell.type}</SheetTitle><SheetDescription>{empById(cell.emp)?.name}</SheetDescription></SheetHeader><div className="mt-4 space-y-3 text-sm"><StatusBadge label={h?.status ?? "Manquante"} /><p>Échéance : {h ? fmtDate(h.expires) : "—"}</p><p>Justificatif : certificat_{cell.type.replace(/\W+/g, "_").toLowerCase()}.pdf</p><Button onClick={() => { if (h) { h.status = "Valide"; h.expires = new Date(Date.now() + 730 * 864e5).toISOString(); emit(); } setCell(null); toast.success("Renouvellement planifié — session proposée, manager et collaborateur notifiés"); }}>Renouveler</Button></div></>}</SheetContent></Sheet>
+    </>
   );
-  function _() { return null; }
 }
-export function HabDrawer() { return null; }
-// drawer rendered inline
-export const _cell = null;
-function Drawer() { return null; }
-export { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, Button, emit, Drawer };
