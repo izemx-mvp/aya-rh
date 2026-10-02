@@ -1,3 +1,4 @@
+import { applyReorg } from "@/lib/actions";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useRef, useState } from "react";
 import { ZoomIn, ZoomOut, Maximize, Shuffle, Save, Download } from "lucide-react";
@@ -59,7 +60,7 @@ function Page() {
         <div className="absolute bottom-3 right-3 h-20 w-32 rounded-lg border border-border bg-card/80 p-1" aria-label="Mini-carte"><div className="h-full w-full rounded bg-muted/50"><div className="h-6 w-10 rounded border border-gold" style={{ transform: `translate(${44 - pan.x / 20}px, ${20 - pan.y / 20}px)` }} /></div></div>
       </div>
       <Sheet open={!!sel} onOpenChange={(o) => !o && setSel(null)}><SheetContent className="glass">{sel && <><SheetHeader><SheetTitle>{sel.title}</SheetTitle><SheetDescription>{sel.head} collaborateurs</SheetDescription></SheetHeader><div className="mt-4 space-y-3 text-sm"><p className="flex items-center gap-2"><Avatar name={sel.holder} size={32} />{sel.holder}</p><Link to="/fiches-de-poste/$id" params={{ id: sel.fpId }} className="block text-gold hover:underline">Fiche de poste {sel.fpId} →</Link>{positions.filter((p) => p.dept === sel.id).map((p) => <Link key={p.id} to="/candidatures" search={{ "c.f_position": p.title } as any} className="block text-gold hover:underline">Poste ouvert : {p.title} →</Link>)}<p className="font-semibold">Rattachements directs</p>{kids(sel.id).map((k) => <p key={k.id}>• {k.title}</p>)}{!kids(sel.id).length && <p className="text-muted-foreground">Aucun</p>}</div></>}</SheetContent></Sheet>
-      <Dialog open={apply} onOpenChange={setApply}><DialogContent><DialogHeader><DialogTitle>Appliquer le scénario ?</DialogTitle><DialogDescription>Les fiches suivantes seront marquées « À réviser » :</DialogDescription></DialogHeader><ul className="text-sm">{moved.map((m) => <li key={m.id}>• {m.fpId} — {m.title}</li>)}</ul><DialogFooter><Button onClick={() => { setApply(false); confetti(); toast.success("Scénario appliqué — liste des fiches à réviser générée"); }}>Confirmer</Button></DialogFooter></DialogContent></Dialog>
+      <Dialog open={apply} onOpenChange={setApply}><DialogContent><DialogHeader><DialogTitle>Appliquer le scénario ?</DialogTitle><DialogDescription>Les fiches suivantes seront marquées « À réviser » :</DialogDescription></DialogHeader><ul className="text-sm">{moved.map((m) => <li key={m.id}>• {m.fpId} — {m.title}</li>)}</ul><DialogFooter><Button onClick={() => { setApply(false); applyReorg(Math.max(6, moved.length)); }}>Confirmer</Button></DialogFooter></DialogContent></Dialog>
     </ModulePage>
   );
 }
