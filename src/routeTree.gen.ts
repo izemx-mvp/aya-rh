@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppCandidaturesIndexRouteImport } from './routes/_app/candidatures.index'
+import { Route as AppCandidaturesIdRouteImport } from './routes/_app/candidatures.$id'
+import { Route as AppFichesDePosteIndexRouteImport } from './routes/_app/fiches-de-poste.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -27,27 +29,49 @@ const AppCandidaturesIndexRoute = AppCandidaturesIndexRouteImport.update({
   path: '/candidatures/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCandidaturesIdRoute = AppCandidaturesIdRouteImport.update({
+  id: '/candidatures/$id',
+  path: '/candidatures/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFichesDePosteIndexRoute = AppFichesDePosteIndexRouteImport.update({
+  id: '/fiches-de-poste/',
+  path: '/fiches-de-poste/',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/candidatures/$id': typeof AppCandidaturesIdRoute
   '/candidatures/': typeof AppCandidaturesIndexRoute
+  '/fiches-de-poste/': typeof AppFichesDePosteIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/candidatures/$id': typeof AppCandidaturesIdRoute
   '/candidatures': typeof AppCandidaturesIndexRoute
+  '/fiches-de-poste': typeof AppFichesDePosteIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
+  '/_app/candidatures/$id': typeof AppCandidaturesIdRoute
   '/_app/candidatures/': typeof AppCandidaturesIndexRoute
+  '/_app/fiches-de-poste/': typeof AppFichesDePosteIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/candidatures/'
+  fullPaths: '/' | '/candidatures/$id' | '/candidatures/' | '/fiches-de-poste/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/candidatures'
-  id: '__root__' | '/' | '/_app' | '/_app/candidatures/'
+  to: '/' | '/candidatures/$id' | '/candidatures' | '/fiches-de-poste'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/_app/candidatures/$id'
+    | '/_app/candidatures/'
+    | '/_app/fiches-de-poste/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -78,15 +102,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCandidaturesIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/candidatures/$id': {
+      id: '/_app/candidatures/$id'
+      path: '/candidatures/$id'
+      fullPath: '/candidatures/$id'
+      preLoaderRoute: typeof AppCandidaturesIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/fiches-de-poste/': {
+      id: '/_app/fiches-de-poste/'
+      path: '/fiches-de-poste'
+      fullPath: '/fiches-de-poste/'
+      preLoaderRoute: typeof AppFichesDePosteIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppCandidaturesIdRoute: typeof AppCandidaturesIdRoute
   AppCandidaturesIndexRoute: typeof AppCandidaturesIndexRoute
+  AppFichesDePosteIndexRoute: typeof AppFichesDePosteIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppCandidaturesIdRoute: AppCandidaturesIdRoute,
   AppCandidaturesIndexRoute: AppCandidaturesIndexRoute,
+  AppFichesDePosteIndexRoute: AppFichesDePosteIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
