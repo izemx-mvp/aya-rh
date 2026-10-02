@@ -54,9 +54,10 @@ const JOBS: Record<string, string[]> = {
 
 export type Employee = {
   id: string; matricule: string; name: string; gender: "H" | "F"; site: string; dept: string; job: string;
-  status: "Actif" | "En intégration" | "En congé" | "En préavis"; contract: string; hireDate: string; seniority: number;
+  status: "Actif" | "En intégration" | "En congé" | "En préavis" | "Parti"; contract: string; hireDate: string; seniority: number;
   team: string; email: string; phone: string; completeness: number; review: "Terminé" | "En cours" | "Non démarré";
   manager: string; age: number; perf: number; potential: number;
+  ficheId?: string; fromCandId?: string;
 };
 export type Habilitation = { id: string; empId: string; type: string; expires: string; status: string };
 
@@ -130,7 +131,10 @@ export type Candidate = {
   applied: string; score: number; reco: string; status: CandStatus; detail: string; recruiter: string; lastAction: string; lastActionDays: number;
   criteria: { k: string; w: number; s: number }[]; experience: number; mobility: boolean; city: string; age: number; email: string; phone: string;
   consent: boolean; retentionDays: number; duplicate?: boolean;
+  demandeId?: string; stageReached?: Stage; employeeId?: string;
 };
+export type Stage = "Nouvelle" | "Présélectionnée" | "Entretien" | "Proposition" | "Recrutée";
+export const STAGE_ORDER: Stage[] = ["Nouvelle", "Présélectionnée", "Entretien", "Proposition", "Recrutée"];
 export const SOURCES = ["Portail carrière", "Cooptation", "LinkedIn", "Rekrute", "Emploi.ma", "Candidature spontanée", "Cabinet"];
 export const CRITERIA = [
   { k: "Expérience", w: 30 }, { k: "Diplômes", w: 15 }, { k: "Compétences techniques", w: 25 },
@@ -169,7 +173,7 @@ export const candidates: Candidate[] = candPlan.map(({ s, d }, i) => {
 export const posById = (id: string) => positions.find((p) => p.id === id)!;
 
 // ---------- Fiches de poste (148) ----------
-export type JobDesc = { id: string; ref: string; title: string; dept: string; site: string; reportsTo: string; status: "Révisée" | "En validation" | "À réviser"; version: string; modified: string; owner: string; quality: number; family: string; level: string; holders: number };
+export type JobDesc = { id: string; ref: string; title: string; dept: string; site: string; reportsTo: string; status: "Révisée" | "En validation" | "À réviser" | "En révision"; version: string; modified: string; owner: string; quality: number; family: string; level: string; holders: number };
 const fpStatus = shuffle([...Array(96).fill("Révisée"), ...Array(31).fill("En validation"), ...Array(21).fill("À réviser")]);
 const allJobs = DEPTS.flatMap((d) => JOBS[d].map((j) => [d, j] as [string, string]));
 export const LEVELS = ["Opérateur", "Technicien", "Agent de maîtrise", "Cadre", "Cadre supérieur"];
@@ -189,14 +193,15 @@ export const jobDescs: JobDesc[] = fpStatus.map((st, i) => {
 positions.forEach((p) => { const fp = jobDescs.find((j) => j.title.startsWith(p.title)); if (fp) p.fpId = fp.id; });
 
 // ---------- Demandes de poste ----------
-export const DP_STAGES = ["Brouillon", "À valider manager", "À valider RH", "À valider Direction", "Approuvée", "Publiée"];
+export const DP_STAGES = ["Brouillon", "À valider manager", "À valider RH", "À valider Direction", "Approuvée", "Publiée", "Pourvue"];
 export const jobRequests = Array.from({ length: 26 }, (_, i) => {
   const pos = i < 12 ? positions[i] : { title: pick(allJobs)[1], dept: pick(DEPTS), site: pick(SITES) };
   return {
     id: `DP-2026-${pad(i + 1, 3)}`, title: pos.title, dept: pos.dept, site: pos.site, requester: pick(employees.slice(1, 80)).name,
     motif: pick(["Création", "Remplacement", "Renfort temporaire"]), count: int(1, 3), contract: pick(["CDI", "CDI", "CDD", "Intérim", "Stage"]),
     level: pick(LEVELS), budget: int(9, 40) * 10000, date: daysFrom(int(10, 90)).toISOString(), priority: pick(["Haute", "Moyenne", "Basse"]),
-    status: i < 12 ? "Publiée" : DP_STAGES[i % 5],
+    status: i < 12 ? "Publiée" : i < 18 ? "Pourvue" : DP_STAGES[i % 5],
+    ficheId: "" as string, ficheVersion: "" as string, filled: 0, replacesEmployeeId: "" as string, departureId: "" as string,
   };
 });
 
@@ -205,7 +210,7 @@ export const jobAds = Array.from({ length: 18 }, (_, i) => {
   const pos = positions[i % 12];
   const cands = candidates.filter((c) => c.positionId === pos.id).length;
   const st = i < 12 ? "En ligne" : pick(["Brouillon", "Planifiée", "Clôturée", "Expirée"]);
-  return { id: `OF-${pad(i + 1, 3)}`, title: pos.title + (i >= 12 ? " (2025)" : ""), positionId: pos.id, site: pos.site, status: st, published: daysAgo(int(5, 60)).toISOString(), closing: daysFrom(int(-20, 40)).toISOString(), views: int(300, 4200), applications: i < 12 ? cands : int(10, 60), channels: { LinkedIn: int(10, 60), Indeed: int(5, 40), "Emploi.ma": int(5, 40), Rekrute: int(5, 40) } };
+  return { id: `AN-${pad(i + 1, 4)}`, demandeId: "", ficheVersion: "" as string,, title: pos.title + (i >= 12 ? " (2025)" : ""), positionId: pos.id, site: pos.site, status: st, published: daysAgo(int(5, 60)).toISOString(), closing: daysFrom(int(-20, 40)).toISOString(), views: int(300, 4200), applications: i < 12 ? cands : int(10, 60), channels: { LinkedIn: int(10, 60), Indeed: int(5, 40), "Emploi.ma": int(5, 40), Rekrute: int(5, 40) } };
 });
 
 // ---------- Entretiens ----------
@@ -219,17 +224,99 @@ export const trainings = Array.from({ length: 36 }, (_, i) => ({ id: `FOR-${pad(
 export const sessions = Array.from({ length: 42 }, (_, i) => ({ id: `SES-${pad(i + 1, 3)}`, course: trainings[i % 36].title, date: daysFrom(int(-5, 80)).toISOString(), trainer: pick(employees).name, place: pick(SITES), capacity: int(8, 20), registered: int(4, 20), status: pick(["Planifiée", "Convocations envoyées", "En cours"]) }));
 export const leaveRequests = Array.from({ length: 60 }, (_, i) => { const e = pick(employees); return { id: `CG-${pad(i + 1, 3)}`, empId: e.id, emp: e.name, site: e.site, type: pick(["Congé annuel", "Maladie", "Événement familial", "Sans solde", "Formation", "Maternité/paternité"]), start: daysFrom(int(-10, 40)).toISOString(), days: int(1, 15), status: i < 14 ? "En attente" : pick(["Approuvée", "Refusée", "Approuvée"]) }; });
 export const hrRequests = Array.from({ length: 48 }, (_, i) => { const e = pick(employees); return { id: `DRH-${pad(i + 1, 3)}`, emp: e.name, empId: e.id, site: e.site, type: pick(["Attestation de travail", "Attestation de salaire", "Changement d'informations", "Avance", "Question", "Autre"]), priority: pick(["Haute", "Moyenne", "Basse"]), status: i < 23 ? pick(["Nouvelle", "En cours", "En attente employé"]) : pick(["Résolue", "Clôturée"]), sla: i < 23 ? pick(["OK", "Bientôt dû", "En retard"]) : "OK", assignee: pick(RECRUITERS), created: daysAgo(int(0, 20)).toISOString() }; });
-export const departures = Array.from({ length: 44 }, (_, i) => { const p = personName(); return { id: `DEP-${pad(i + 1, 3)}`, emp: p.name, site: pick(SITES), dept: pick(DEPTS), type: pick(["Démission", "Démission", "Fin de contrat", "Rupture conventionnelle", "Licenciement", "Retraite"]), lastDay: daysAgo(int(-30, 360)).toISOString(), status: i < 5 ? "En cours" : "Clôturé", progress: i < 5 ? int(20, 80) : 100, seniority: int(0, 20) }; });
+export const departures = Array.from({ length: 44 }, (_, i) => { const p = personName(); return { id: `DEP-${pad(i + 1, 3)}`, emp: p.name, site: pick(SITES), dept: pick(DEPTS), type: pick(["Démission", "Démission", "Fin de contrat", "Rupture conventionnelle", "Licenciement", "Retraite"]), lastDay: daysAgo(int(-30, 360)).toISOString(), empId: "" as string, reason: "" as string, status: i < 5 ? "En cours" : "Clôturé", progress: i < 5 ? int(20, 80) : 100, seniority: int(0, 20) }; });
 export const onboarding = employees.filter((e) => e.status === "En intégration").map((e) => ({ ...e, progress: int(10, 90), buddy: pick(employees).name, start: e.hireDate }));
 export const documentsLib = Array.from({ length: 34 }, (_, i) => ({ id: `DOC-${pad(i + 1, 3)}`, title: pick(["Règlement intérieur", "Politique HSE", "Politique de mobilité", "Modèle CDI", "Modèle CDD", "Procédure de recrutement", "Charte informatique", "Procédure congés", "Code de conduite", "Politique anti-harcèlement"]) + (i > 9 ? ` ${2020 + (i % 6)}` : ""), category: pick(["Règlement", "Politique RH", "Modèle de contrat", "Procédure"]), version: `v${int(1, 5)}.${int(0, 9)}`, review: daysFrom(int(-60, 300)).toISOString(), owner: pick(RECRUITERS), status: i % 4 === 0 ? "À revoir" : "À jour", ack: int(40, 100) }));
 export const announcements = Array.from({ length: 25 }, (_, i) => ({ id: `COM-${pad(i + 1, 3)}`, title: pick(["Rappel port des EPI", "Nouvelle cantine Zgounder", "Campagne d'entretiens annuels", "Calendrier Aïd", "Formation IA : inscriptions", "Bilan sécurité trimestriel", "Bienvenue aux nouvelles recrues"]), type: pick(["Note de service", "Nouveauté", "Rappel HSE"]), audience: pick(["Tous", ...SITES]), status: i < 3 ? "Brouillon" : i < 6 ? "Planifiée" : "Envoyée", readRate: i < 6 ? 0 : int(42, 97), date: daysAgo(int(-10, 120)).toISOString() }));
 export const auditLog = Array.from({ length: 220 }, (_, i) => ({ id: `AUD-${pad(i + 1, 4)}`, who: pick(["Samira Baroudi", ...RECRUITERS]), what: pick(["Changement de statut candidat", "Modification de fiche de poste", "Export de données", "Consultation de dossier", "Changement de rôle", "Validation variables de paie"]), object: pick([...candidates.slice(0, 40).map((c) => c.ref), ...jobDescs.slice(0, 30).map((j) => j.ref)]), when: new Date(TODAY.getTime() - i * 3.3 * 3600000).toISOString(), before: pick(["Nouvelle", "v1.2", "Manager", "—"]), after: pick(["Présélectionnée", "v2.0", "Responsable RH", "—"]), ip: `10.20.${int(1, 9)}.${int(2, 250)}` }));
 export const users = employees.filter((e) => ["RH", "Direction"].includes(e.dept) || /Chef|Responsable|Directeur/.test(e.job)).slice(0, 64).map((e, i) => ({ id: e.id, name: e.name, email: e.email, site: e.site, role: i === 0 ? "DRH" : pick(["Responsable RH", "Manager", "Manager", "Direction", "Lecture seule", "Collaborateur"]), last: daysAgo(int(0, 30)).toISOString() }));
 
-export const KPI = {
-  effectif: 600, openPositions: 12, applications: 312, analyzed: 312, shortlisted: 74, interviews: 28, offers: 9, hired: 6, conversion: "1,9 %", avgDays: 34,
-  fp: { total: 148, revised: 96, validation: 31, toRevise: 21 }, reviews: { done: 412, ongoing: 118, notStarted: 70 },
-  training: { sessions: 42, trained: 380, budget: 1200000, consumed: 61, realization: 85 }, habs: { expiring: 47, expired: 9 },
-  onboarding: 9, departures: 44, turnover: "7,4 %", retention90: 88, onLeave: 38, pendingLeave: 14, absenteeism: "3,1 %", hrOpen: 23,
+// ---------- D2 — Relations between entities ----------
+const ficheFor = (job: string, dept: string) => (jobDescs.find((j) => j.title === job) ?? jobDescs.find((j) => j.title.startsWith(job)) ?? jobDescs.find((j) => j.dept === dept) ?? jobDescs[0]).id;
+employees.forEach((e) => { e.ficheId = ficheFor(e.job, e.dept); });
+// Required certifications of a fiche = certifications held by its holders (seed stays consistent).
+export const ficheCerts: Record<string, string[]> = {};
+habilitations.forEach((h) => { const f = empById(h.empId)!.ficheId!; (ficheCerts[f] ??= []); if (!ficheCerts[f].includes(h.type)) ficheCerts[f].push(h.type); });
+
+// Candidates → demandes. 12 open demandes (positions) + 6 "Pourvue" demandes holding the 6 recruits.
+const STAGE_OF: Record<string, Stage> = {
+  "Nouvelle (à décider)": "Nouvelle", "Refusée (score insuffisant)": "Nouvelle", "En attente d'entretien": "Présélectionnée", "Refusée après présélection": "Présélectionnée",
+  Vivier: "Présélectionnée", "Entretien planifié ou en cours": "Entretien", "Refusée après entretien": "Entretien", "Offre en attente": "Proposition", "Recrutée": "Recrutée",
 };
+jobRequests.forEach((d, i) => { if (i < 12) { d.ficheId = positions[i].fpId; } else d.ficheId = ficheFor(d.title, d.dept); const f = jobDescs.find((j) => j.id === d.ficheId)!; d.ficheVersion = f.version; });
+const recruits = candidates.filter((c) => c.status === "Recrutée");
+candidates.forEach((c) => {
+  c.stageReached = STAGE_OF[c.detail] ?? "Nouvelle";
+  if (c.status === "Offre") c.detail = "Proposition en attente";
+  c.demandeId = jobRequests[positions.findIndex((p) => p.id === c.positionId)].id;
+});
+recruits.forEach((c, k) => {
+  const d = jobRequests[12 + k]; const pos = posById(c.positionId);
+  Object.assign(d, { title: pos.title, dept: pos.dept, site: pos.site, count: 1, filled: 1, ficheId: pos.fpId });
+  c.demandeId = d.id;
+});
+jobRequests.slice(0, 12).forEach((d) => { d.count = Math.max(d.count, 1); d.filled = 0; });
+jobAds.forEach((a, i) => {
+  const d = jobRequests[i]; a.demandeId = d.id; a.ficheVersion = d.ficheVersion;
+  if (i >= 12) { a.status = "Clôturée"; a.title = d.title; a.applications = candidates.filter((c) => c.demandeId === d.id).length; }
+});
+
+// Hiring proposals: 6 accepted (recruits) + 3 sent.
+export type Proposition = { id: string; candId: string; salary: number; start: string; status: "Envoyée" | "Négociation" | "Acceptée" | "Refusée" };
+export const propositions: Proposition[] = candidates.filter((c) => c.status === "Recrutée" || c.status === "Offre").map((c, i) => ({ id: `PE-${pad(i + 1, 4)}`, candId: c.id, salary: int(9, 30) * 1000, start: daysFrom(c.status === "Offre" ? int(15, 40) : -int(2, 30)).toISOString(), status: c.status === "Recrutée" ? "Acceptée" : "Envoyée" }));
+
+// 9 onboardings = 6 platform recruits + 3 earlier hires.
+const onbEmps = employees.filter((e) => e.status === "En intégration");
+recruits.forEach((c, k) => {
+  const e = onbEmps[k]; const pos = posById(c.positionId);
+  Object.assign(e, { name: c.name, gender: c.gender, job: pos.title, dept: pos.dept, ficheId: pos.fpId, fromCandId: c.id });
+  c.employeeId = e.id;
+});
+onboarding.forEach((o) => { const e = empById(o.id)!; Object.assign(o, { name: e.name, job: e.job, dept: e.dept, site: e.site, ficheId: e.ficheId }); });
+jobDescs.forEach((j) => { j.holders = employees.filter((e) => e.ficheId === j.id).length; });
+
+// Person-level stores (documents, messages, timeline events created by actions).
+export type Doc = { t: string; s: string; v: string; d: string };
+export const empDocs: Record<string, Doc[]> = {};
+export const candDocs: Record<string, Doc[]> = {};
+export const candMessages: Record<string, { when: string; title: string; body: string }[]> = {};
+export type TEvent = { personId: string; when: string; module: string; label: string; to?: string };
+export const events: TEvent[] = [];
+export const departureLinks: Record<string, { empId?: string; reason?: string }> = {};
+
+// ---------- KPIs — all DERIVED from the data above ----------
+const reached = (s: Stage) => candidates.filter((c) => STAGE_ORDER.indexOf(c.stageReached ?? "Nouvelle") >= STAGE_ORDER.indexOf(s)).length;
+export const KPI = {
+  get effectif() { return employees.filter((e) => e.status !== "Parti").length; },
+  get openPositions() { return jobRequests.filter((d) => d.status === "Publiée").length; },
+  get applications() { return candidates.length; },
+  get analyzed() { return candidates.length; },
+  get shortlisted() { return reached("Présélectionnée"); },
+  get interviews() { return reached("Entretien"); },
+  get offers() { return propositions.filter((p) => p.status !== "Refusée").length; },
+  get hired() { return reached("Recrutée"); },
+  get conversion() { return ((reached("Recrutée") / candidates.length) * 100).toFixed(1).replace(".", ",") + " %"; },
+  avgDays: 34,
+  fp: {
+    get total() { return jobDescs.length; },
+    get revised() { return jobDescs.filter((j) => j.status === "Révisée").length; },
+    get validation() { return jobDescs.filter((j) => j.status === "En validation").length; },
+    get toRevise() { return jobDescs.filter((j) => j.status === "À réviser" || j.status === "En révision").length; },
+  },
+  reviews: { done: 412, ongoing: 118, notStarted: 70 },
+  training: { sessions: 42, trained: 380, budget: 1200000, consumed: 61, realization: 85 },
+  habs: {
+    get expiring() { return habilitations.filter((h) => h.status === "Expire ≤ 30 j" || h.status === "Expire ≤ 60 j").length; },
+    get expired() { return habilitations.filter((h) => h.status === "Expirée").length; },
+  },
+  get onboarding() { return employees.filter((e) => e.status === "En intégration").length; },
+  get departures() { return departures.length; },
+  get turnover() { return ((departures.length / 595) * 100).toFixed(1).replace(".", ",") + " %"; },
+  retention90: 88,
+  get onLeave() { return employees.filter((e) => e.status === "En congé").length; },
+  get pendingLeave() { return leaveRequests.filter((l) => l.status === "En attente").length; },
+  absenteeism: "3,1 %",
+  get hrOpen() { return hrRequests.filter((r) => !["Résolue", "Clôturée"].includes(r.status)).length; },
+};
+
 export const CONTRACTS = ["CDI", "CDD", "Intérim", "Stage"];
