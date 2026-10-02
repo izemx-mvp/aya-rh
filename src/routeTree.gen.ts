@@ -12,6 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
+import { Route as AppDemandesDePosteRouteImport } from './routes/_app/demandes-de-poste'
+import { Route as AppEntretiensRouteImport } from './routes/_app/entretiens'
+import { Route as AppOffresRouteImport } from './routes/_app/offres'
+import { Route as AppVivierRouteImport } from './routes/_app/vivier'
 import { Route as AppCandidaturesIndexRouteImport } from './routes/_app/candidatures.index'
 import { Route as AppCandidaturesIdRouteImport } from './routes/_app/candidatures.$id'
 import { Route as AppFichesDePosteIndexRouteImport } from './routes/_app/fiches-de-poste.index'
@@ -29,6 +33,26 @@ const AppRoute = AppRouteImport.update({
 const AppDashboardRoute = AppDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDemandesDePosteRoute = AppDemandesDePosteRouteImport.update({
+  id: '/demandes-de-poste',
+  path: '/demandes-de-poste',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEntretiensRoute = AppEntretiensRouteImport.update({
+  id: '/entretiens',
+  path: '/entretiens',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOffresRoute = AppOffresRouteImport.update({
+  id: '/offres',
+  path: '/offres',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppVivierRoute = AppVivierRouteImport.update({
+  id: '/vivier',
+  path: '/vivier',
   getParentRoute: () => AppRoute,
 } as any)
 const AppCandidaturesIndexRoute = AppCandidaturesIndexRouteImport.update({
@@ -55,6 +79,10 @@ const AppFichesDePosteIdRoute = AppFichesDePosteIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof AppDashboardRoute
+  '/demandes-de-poste': typeof AppDemandesDePosteRoute
+  '/entretiens': typeof AppEntretiensRoute
+  '/offres': typeof AppOffresRoute
+  '/vivier': typeof AppVivierRoute
   '/candidatures/$id': typeof AppCandidaturesIdRoute
   '/fiches-de-poste/$id': typeof AppFichesDePosteIdRoute
   '/candidatures/': typeof AppCandidaturesIndexRoute
@@ -63,6 +91,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof AppDashboardRoute
+  '/demandes-de-poste': typeof AppDemandesDePosteRoute
+  '/entretiens': typeof AppEntretiensRoute
+  '/offres': typeof AppOffresRoute
+  '/vivier': typeof AppVivierRoute
   '/candidatures/$id': typeof AppCandidaturesIdRoute
   '/fiches-de-poste/$id': typeof AppFichesDePosteIdRoute
   '/candidatures': typeof AppCandidaturesIndexRoute
@@ -73,6 +105,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/demandes-de-poste': typeof AppDemandesDePosteRoute
+  '/_app/entretiens': typeof AppEntretiensRoute
+  '/_app/offres': typeof AppOffresRoute
+  '/_app/vivier': typeof AppVivierRoute
   '/_app/candidatures/$id': typeof AppCandidaturesIdRoute
   '/_app/fiches-de-poste/$id': typeof AppFichesDePosteIdRoute
   '/_app/candidatures/': typeof AppCandidaturesIndexRoute
@@ -83,6 +119,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/dashboard'
+    | '/demandes-de-poste'
+    | '/entretiens'
+    | '/offres'
+    | '/vivier'
     | '/candidatures/$id'
     | '/fiches-de-poste/$id'
     | '/candidatures/'
@@ -91,6 +131,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/dashboard'
+    | '/demandes-de-poste'
+    | '/entretiens'
+    | '/offres'
+    | '/vivier'
     | '/candidatures/$id'
     | '/fiches-de-poste/$id'
     | '/candidatures'
@@ -100,6 +144,10 @@ export interface FileRouteTypes {
     | '/'
     | '/_app'
     | '/_app/dashboard'
+    | '/_app/demandes-de-poste'
+    | '/_app/entretiens'
+    | '/_app/offres'
+    | '/_app/vivier'
     | '/_app/candidatures/$id'
     | '/_app/fiches-de-poste/$id'
     | '/_app/candidatures/'
@@ -132,6 +180,34 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/demandes-de-poste': {
+      id: '/_app/demandes-de-poste'
+      path: '/demandes-de-poste'
+      fullPath: '/demandes-de-poste'
+      preLoaderRoute: typeof AppDemandesDePosteRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/entretiens': {
+      id: '/_app/entretiens'
+      path: '/entretiens'
+      fullPath: '/entretiens'
+      preLoaderRoute: typeof AppEntretiensRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/offres': {
+      id: '/_app/offres'
+      path: '/offres'
+      fullPath: '/offres'
+      preLoaderRoute: typeof AppOffresRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/vivier': {
+      id: '/_app/vivier'
+      path: '/vivier'
+      fullPath: '/vivier'
+      preLoaderRoute: typeof AppVivierRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/candidatures/': {
@@ -167,6 +243,10 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppDashboardRoute: typeof AppDashboardRoute
+  AppDemandesDePosteRoute: typeof AppDemandesDePosteRoute
+  AppEntretiensRoute: typeof AppEntretiensRoute
+  AppOffresRoute: typeof AppOffresRoute
+  AppVivierRoute: typeof AppVivierRoute
   AppCandidaturesIdRoute: typeof AppCandidaturesIdRoute
   AppFichesDePosteIdRoute: typeof AppFichesDePosteIdRoute
   AppCandidaturesIndexRoute: typeof AppCandidaturesIndexRoute
@@ -175,6 +255,10 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppDashboardRoute: AppDashboardRoute,
+  AppDemandesDePosteRoute: AppDemandesDePosteRoute,
+  AppEntretiensRoute: AppEntretiensRoute,
+  AppOffresRoute: AppOffresRoute,
+  AppVivierRoute: AppVivierRoute,
   AppCandidaturesIdRoute: AppCandidaturesIdRoute,
   AppFichesDePosteIdRoute: AppFichesDePosteIdRoute,
   AppCandidaturesIndexRoute: AppCandidaturesIndexRoute,
