@@ -19,7 +19,7 @@ const TASKS = [["Badge d'accès", "IT", 0], ["Commande EPI", "Achats", 0], ["Acc
 function Page() {
   const [sel, setSel] = useState(onboarding[0]);
   const [done, setDone] = useState<Record<string, boolean>>({});
-  const [tpl, setTpl] = useState(TASKS.map((t, i) => ({ id: i, name: t[0], owner: t[1], phase: t[2] })));
+  const [tpl, setTpl] = useState<{ id: number; name: string; owner: string; phase: number }[]>(TASKS.map((t, i) => ({ id: i, name: t[0], owner: t[1], phase: t[2] })));
   const [newT, setNewT] = useState("");
   const prog = (id: string, base: number) => Math.round(((tpl.filter((t) => done[id + t.id]).length + (base / 100) * tpl.length) / tpl.length) * 100) % 101;
   return (
