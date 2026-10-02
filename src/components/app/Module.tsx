@@ -81,7 +81,8 @@ export function ModulePage({ title, subtitle, crumbs, kpis, actions = [], tabs, 
           <TabsList className="flex h-auto flex-wrap justify-start">{tabs.map((t) => <TabsTrigger key={t.label} value={t.label}>{t.label}</TabsTrigger>)}</TabsList>
           {tabs.map((t) => <TabsContent key={t.label} value={t.label} className="mt-4 space-y-4">{t.content}</TabsContent>)}
         </Tabs>
-      ) : children}
+      ) : null}
+      {children}
     </div>
   );
 }
