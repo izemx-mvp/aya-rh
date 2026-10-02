@@ -7,7 +7,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { PageHeader, StatusBadge, ScoreRing, Avatar, AiDisclaimer, AiBadge, Glass, Bar, Typing, EASE } from "@/components/app/kit";
 import { RefuseDialog, ScheduleDialog, OfferDialog, NotesBox } from "@/components/cand/CandModals";
-import { candidates, posById, fmtDate, interviews } from "@/data/mock";
+import { candidates, posById, fmtDate, interviews, candDocs, candMessages, propositions, empById } from "@/data/mock";
+import { acceptProposition, setPropositionStatus, informOthers } from "@/lib/actions";
+import { JobChain, PersonTimeline } from "@/components/app/Links";
 import { setCandidateStatus, useStore } from "@/lib/store";
 import { exportPdf } from "@/lib/pdf";
 
@@ -34,6 +36,9 @@ function Page() {
   const missing = c.score < 70 ? ["Certification travail en hauteur", "Anglais technique B2"] : ["Anglais technique B2"];
   const explanation = `${name} obtient ${c.score}/100 pour le poste ${pos.title}. Le profil se distingue par ${c.experience} ans d'expérience dont une partie en environnement minier, et une bonne maîtrise des compétences techniques clés. ${c.mobility ? `La mobilité vers ${pos.site} est confirmée.` : `La mobilité vers ${pos.site} reste à confirmer.`} Points à approfondir en entretien : ${missing.join(", ").toLowerCase()}.`;
   const ivs = interviews.filter((i) => i.candId === c.id);
+  const prop = propositions.find((p) => p.candId === c.id);
+  const emp = c.employeeId ? empById(c.employeeId) : undefined;
+  const others = candidates.filter((x) => x.demandeId === c.demandeId && x.id !== c.id && ["Nouvelle", "Présélectionnée", "Entretien"].includes(x.status)).length;
 
   return (
     <div>
@@ -45,9 +50,12 @@ function Page() {
           <Button variant="outline" size="sm" onClick={() => setCandidateStatus([c.id], "Vivier")}><Gem className="mr-1 h-4 w-4" />Vivier</Button>
           <Button variant="outline" size="sm" onClick={() => exportPdf(`Synthèse candidat ${c.ref}`, [["Candidat", `${name} — ${pos.title} (${pos.site})`], ["Score IA", `${c.score}/100 — ${c.reco}`], ["Explication", explanation], ["Avertissement", "L'analyse IA est une aide à la décision. La décision finale appartient aux RH."]])}><Download className="mr-1 h-4 w-4" />Télécharger</Button>
           <Button variant="destructive" size="sm" onClick={() => setRefuse(true)}><X className="mr-1 h-4 w-4" />Refuser</Button>
-          <Button size="sm" className="bg-gold-gradient text-primary-foreground" onClick={() => setOffer(true)}><Send className="mr-1 h-4 w-4" />Envoyer une offre</Button>
+          <Button size="sm" className="bg-gold-gradient text-primary-foreground" onClick={() => setOffer(true)}><Send className="mr-1 h-4 w-4" />Envoyer une proposition d'embauche</Button>
         </>} />
 
+      <JobChain demandeId={c.demandeId} current={c.status === "Recrutée" ? "Recrutement" : c.status === "Offre" ? "Proposition" : c.status === "Entretien" ? "Entretiens" : "Candidatures"} />
+      {c.status === "Offre" && <Glass className="mb-5 flex flex-wrap items-center gap-3 border border-gold/40 p-4 text-sm"><span className="flex-1">Proposition d'embauche {prop?.id} envoyée · <b>{prop?.status}</b></span><Button size="sm" className="bg-gold-gradient text-primary-foreground" onClick={() => acceptProposition(c.id)}><CheckCircle2 className="mr-1 h-4 w-4" />Marquer comme acceptée</Button><Button size="sm" variant="outline" onClick={() => setPropositionStatus(c.id, "Négociation")}>En négociation</Button><Button size="sm" variant="outline" className="text-danger" onClick={() => setPropositionStatus(c.id, "Refusée")}>Refusée</Button></Glass>}
+      {c.status === "Recrutée" && <Glass className="mb-5 flex flex-wrap items-center gap-3 border border-success/40 p-4 text-sm"><CheckCircle2 className="h-5 w-5 text-success" /><span className="flex-1">Recruté(e){emp && <> — dossier <Link to="/employes/$id" params={{ id: emp.id }} className="text-gold hover:underline">{emp.matricule}</Link> · {emp.status}</>}</span>{others > 0 && <Button size="sm" variant="outline" onClick={() => informOthers(c.demandeId!)}>Informer les {others} autres candidats</Button>}</Glass>}
       <Glass className="mb-5 flex flex-wrap items-center gap-5 p-5">
         {anon ? <div className="h-16 w-16 rounded-full bg-muted" /> : <Avatar name={c.name} size={64} />}
         <div className="flex-1"><p className="text-lg font-semibold">{name}</p><p className="text-sm text-muted-foreground">{c.currentJob}{!anon && ` · ${c.city} · ${c.age} ans`}</p><div className="mt-2 flex flex-wrap gap-2"><StatusBadge label={c.status} /><StatusBadge label={c.reco} />{c.duplicate && <StatusBadge label="Doublon potentiel" tone="warning" />}<Link to="/candidatures" search={{ "c.f_position": pos.title } as any} className="text-xs text-gold hover:underline">Voir le poste {pos.title} →</Link></div></div>
@@ -95,9 +103,9 @@ function Page() {
             <TabsContent value="path" className="pt-3"><ol className="relative space-y-4 border-l border-border pl-5 text-sm">{[["2019 – aujourd'hui", c.currentJob], ["2016 – 2019", "Technicien junior · Société minière"], ["2016", "Diplôme d'ingénieur — ENIM Rabat"], ["2024", "Certification Secourisme SST"]].map(([d, t]) => <li key={d}><span className="absolute -left-1.5 mt-1 h-3 w-3 rounded-full bg-gold" /><p className="text-xs text-muted-foreground">{d}</p><p>{t}</p></li>)}</ol></TabsContent>
             <TabsContent value="int" className="pt-3">{ivs.length ? ivs.map((i) => <div key={i.id} className="flex items-center justify-between border-b border-border py-2 text-sm"><span>{i.type} · {fmtDate(i.date)} {i.hour}</span><StatusBadge label={i.status} /></div>) : <p className="text-sm text-muted-foreground">Aucun entretien. <button className="text-gold underline" onClick={() => setSched(true)}>Planifier</button></p>}</TabsContent>
             <TabsContent value="notes" className="pt-3"><NotesBox /></TabsContent>
-            <TabsContent value="msg" className="space-y-2 pt-3 text-sm"><div className="rounded-lg bg-muted/40 p-3"><p className="text-xs text-muted-foreground">Accusé de réception · {fmtDate(c.applied)}</p>Merci pour votre candidature au poste de {pos.title}.</div></TabsContent>
-            <TabsContent value="hist" className="pt-3"><ul className="space-y-2 text-sm">{[[fmtDate(c.applied), "Candidature déposée via " + c.source], [fmtDate(c.applied), "CV analysé par l'IA — score " + c.score], ["Récemment", c.lastAction]].map(([d, t], i) => <li key={i} className="flex gap-3"><span className="w-28 shrink-0 text-xs text-muted-foreground">{d}</span>{t}</li>)}</ul></TabsContent>
-            <TabsContent value="docs" className="pt-3 text-sm">{["CV.pdf", "Lettre de motivation.pdf", "Diplôme.pdf"].map((d) => <div key={d} className="flex items-center justify-between border-b border-border py-2">{d}<Button size="sm" variant="ghost" onClick={() => exportPdf(d.replace(".pdf", ""), [["Document", `${d} — ${name}`]])}>Télécharger</Button></div>)}</TabsContent>
+            <TabsContent value="msg" className="space-y-2 pt-3 text-sm">{(candMessages[c.id] ?? []).map((m, i) => <div key={i} className="rounded-lg border border-gold/20 bg-gold/5 p-3"><p className="text-xs text-muted-foreground">{m.title} · {fmtDate(m.when)}</p>{m.body}</div>)}<div className="rounded-lg bg-muted/40 p-3"><p className="text-xs text-muted-foreground">Accusé de réception · {fmtDate(c.applied)}</p>Merci pour votre candidature au poste de {pos.title}.</div></TabsContent>
+            <TabsContent value="hist" className="pt-3"><PersonTimeline id={c.id} /><ul className="hidden" data-x="space-y-2 text-sm">{[[fmtDate(c.applied), "Candidature déposée via " + c.source], [fmtDate(c.applied), "CV analysé par l'IA — score " + c.score], ["Récemment", c.lastAction]].map(([d, t], i) => <li key={i} className="flex gap-3"><span className="w-28 shrink-0 text-xs text-muted-foreground">{d}</span>{t}</li>)}</ul></TabsContent>
+            <TabsContent value="docs" className="pt-3 text-sm">{(candDocs[c.id] ?? []).map((d, i) => <div key={"g" + i} className="flex items-center justify-between border-b border-border py-2"><span>{d.t} <span className="text-xs text-muted-foreground">· {d.v} · {fmtDate(d.d)}</span></span><StatusBadge label={d.s} /></div>)}{["CV.pdf", "Lettre de motivation.pdf", "Diplôme.pdf"].map((d) => <div key={d} className="flex items-center justify-between border-b border-border py-2">{d}<Button size="sm" variant="ghost" onClick={() => exportPdf(d.replace(".pdf", ""), [["Document", `${d} — ${name}`]])}>Télécharger</Button></div>)}</TabsContent>
           </Tabs>
         </Glass>
       </div>
