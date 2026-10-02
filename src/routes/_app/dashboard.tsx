@@ -28,7 +28,7 @@ function Page() {
   const [feed, setFeed] = useState(() => FEED.slice(0, 4).map((t, i) => ({ id: i, t, when: `il y a ${i * 7 + 2} min` })));
   const [feedAll, setFeedAll] = useState(false); const [fp, setFp] = useState(1);
   const [custom, setCustom] = useState(false);
-  const [widgets, setWidgets] = useState<W[]>(() => { try { return JSON.parse(sessionStorage.getItem("aya-widgets")!) ?? null; } catch { return null; } } ?? [{ id: "kpi", label: "Indicateurs clés", on: true }, { id: "todo", label: "À traiter aujourd'hui", on: true }, { id: "charts", label: "Graphiques", on: true }, { id: "feed", label: "Activité IA", on: true }]);
+  const [widgets, setWidgets] = useState<W[]>(() => { try { const v = JSON.parse(sessionStorage.getItem("aya-widgets")!); if (v) return v; } catch {} return [{ id: "kpi", label: "Indicateurs clés", on: true }, { id: "todo", label: "À traiter aujourd'hui", on: true }, { id: "charts", label: "Graphiques", on: true }, { id: "feed", label: "Activité IA", on: true }]; });
   useEffect(() => { sessionStorage.setItem("aya-widgets", JSON.stringify(widgets)); }, [widgets]);
   useEffect(() => { let k = 4; const id = setInterval(() => { setFeed((f) => [{ id: Date.now(), t: FEED[k++ % FEED.length], when: "à l'instant" }, ...f].slice(0, 30)); }, 6000); return () => clearInterval(id); }, []);
   const [todo, setTodo] = useState([
@@ -45,7 +45,6 @@ function Page() {
   const bySite = SITES.map((s) => ({ site: s, Candidats: candidates.filter((c) => c.site === s).length, Cible: SITE_COUNTS[s] + Math.round(SITE_COUNTS[s] * 0.04), Affecté: employees.filter((e) => e.site === s).length }));
   const byDept = DEPTS.map((d) => ({ d: d.split(" ")[0], Postes: positions.filter((p) => p.dept === d).length })).filter((x) => x.Postes);
   const turn = Array.from({ length: 12 }, (_, i) => ({ m: ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"][i], Départs: [3, 4, 2, 5, 4, 3, 6, 4, 3, 4, 3, 3][i] }));
-  const on = (id: string) => widgets.find((w) => w.id === id)?.on;
 
   const blocks: Record<string, React.ReactNode> = {
     kpi: (
@@ -144,5 +143,3 @@ function Page() {
     </div>
   );
 }
-export { on as _unused };
-var on: any;
