@@ -45,7 +45,7 @@ export function audit(what: string, object: string, before = "—", after = "—
 
 const STATUS_DETAIL: Record<CandStatus, string> = {
   Nouvelle: "Nouvelle (à décider)", "Présélectionnée": "En attente d'entretien", Entretien: "Entretien planifié ou en cours",
-  Offre: "Offre en attente", "Recrutée": "Recrutée", "Refusée": "Refusée", Vivier: "Vivier",
+  Offre: "Proposition en attente", "Recrutée": "Recrutée", "Refusée": "Refusée", Vivier: "Vivier",
 };
 /** Change candidate statuses with a 6s undo toast. */
 export function setCandidateStatus(ids: string[], status: CandStatus, label?: string) {
@@ -58,10 +58,7 @@ export function setCandidateStatus(ids: string[], status: CandStatus, label?: st
   });
 }
 export function setJobDescStatus(id: string, status: (typeof jobDescs)[number]["status"]) {
-  const j = jobDescs.find((x) => x.id === id)!; const before = j.status;
-  j.status = status; j.modified = new Date().toISOString(); if (status === "Révisée") j.quality = Math.max(j.quality, 86);
-  audit("Modification de fiche de poste", j.ref, before, status); emit();
-  toast.success(`${j.ref} : ${status}`, { duration: 6000, action: { label: "Annuler", onClick: () => { j.status = before; emit(); } } });
+  import("./actions").then((m) => m.setFicheStatus(id, status));
 }
 export function undoToast(msg: string, undo?: () => void) {
   toast.success(msg, { duration: 6000, action: undo ? { label: "Annuler", onClick: () => { undo(); emit(); } } : undefined });
