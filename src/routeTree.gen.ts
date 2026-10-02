@@ -11,7 +11,22 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/_app'
+import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
+import { Route as AppDemandesDePosteRouteImport } from './routes/_app/demandes-de-poste'
+import { Route as AppDepartsRouteImport } from './routes/_app/departs'
+import { Route as AppEntretiensRouteImport } from './routes/_app/entretiens'
+import { Route as AppFormationRouteImport } from './routes/_app/formation'
+import { Route as AppHabilitationsRouteImport } from './routes/_app/habilitations'
+import { Route as AppIntegrationRouteImport } from './routes/_app/integration'
+import { Route as AppOffresRouteImport } from './routes/_app/offres'
+import { Route as AppOrganigrammeRouteImport } from './routes/_app/organigramme'
+import { Route as AppVivierRouteImport } from './routes/_app/vivier'
 import { Route as AppCandidaturesIndexRouteImport } from './routes/_app/candidatures.index'
+import { Route as AppCandidaturesIdRouteImport } from './routes/_app/candidatures.$id'
+import { Route as AppEmployesIndexRouteImport } from './routes/_app/employes.index'
+import { Route as AppEmployesIdRouteImport } from './routes/_app/employes.$id'
+import { Route as AppFichesDePosteIndexRouteImport } from './routes/_app/fiches-de-poste.index'
+import { Route as AppFichesDePosteIdRouteImport } from './routes/_app/fiches-de-poste.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,32 +37,205 @@ const AppRoute = AppRouteImport.update({
   id: '/_app',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppDashboardRoute = AppDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDemandesDePosteRoute = AppDemandesDePosteRouteImport.update({
+  id: '/demandes-de-poste',
+  path: '/demandes-de-poste',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDepartsRoute = AppDepartsRouteImport.update({
+  id: '/departs',
+  path: '/departs',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEntretiensRoute = AppEntretiensRouteImport.update({
+  id: '/entretiens',
+  path: '/entretiens',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFormationRoute = AppFormationRouteImport.update({
+  id: '/formation',
+  path: '/formation',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHabilitationsRoute = AppHabilitationsRouteImport.update({
+  id: '/habilitations',
+  path: '/habilitations',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppIntegrationRoute = AppIntegrationRouteImport.update({
+  id: '/integration',
+  path: '/integration',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOffresRoute = AppOffresRouteImport.update({
+  id: '/offres',
+  path: '/offres',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppOrganigrammeRoute = AppOrganigrammeRouteImport.update({
+  id: '/organigramme',
+  path: '/organigramme',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppVivierRoute = AppVivierRouteImport.update({
+  id: '/vivier',
+  path: '/vivier',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppCandidaturesIndexRoute = AppCandidaturesIndexRouteImport.update({
   id: '/candidatures/',
   path: '/candidatures/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCandidaturesIdRoute = AppCandidaturesIdRouteImport.update({
+  id: '/candidatures/$id',
+  path: '/candidatures/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEmployesIndexRoute = AppEmployesIndexRouteImport.update({
+  id: '/employes/',
+  path: '/employes/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEmployesIdRoute = AppEmployesIdRouteImport.update({
+  id: '/employes/$id',
+  path: '/employes/$id',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFichesDePosteIndexRoute = AppFichesDePosteIndexRouteImport.update({
+  id: '/fiches-de-poste/',
+  path: '/fiches-de-poste/',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFichesDePosteIdRoute = AppFichesDePosteIdRouteImport.update({
+  id: '/fiches-de-poste/$id',
+  path: '/fiches-de-poste/$id',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/demandes-de-poste': typeof AppDemandesDePosteRoute
+  '/departs': typeof AppDepartsRoute
+  '/entretiens': typeof AppEntretiensRoute
+  '/formation': typeof AppFormationRoute
+  '/habilitations': typeof AppHabilitationsRoute
+  '/integration': typeof AppIntegrationRoute
+  '/offres': typeof AppOffresRoute
+  '/organigramme': typeof AppOrganigrammeRoute
+  '/vivier': typeof AppVivierRoute
+  '/candidatures/$id': typeof AppCandidaturesIdRoute
+  '/employes/$id': typeof AppEmployesIdRoute
+  '/fiches-de-poste/$id': typeof AppFichesDePosteIdRoute
   '/candidatures/': typeof AppCandidaturesIndexRoute
+  '/employes/': typeof AppEmployesIndexRoute
+  '/fiches-de-poste/': typeof AppFichesDePosteIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/dashboard': typeof AppDashboardRoute
+  '/demandes-de-poste': typeof AppDemandesDePosteRoute
+  '/departs': typeof AppDepartsRoute
+  '/entretiens': typeof AppEntretiensRoute
+  '/formation': typeof AppFormationRoute
+  '/habilitations': typeof AppHabilitationsRoute
+  '/integration': typeof AppIntegrationRoute
+  '/offres': typeof AppOffresRoute
+  '/organigramme': typeof AppOrganigrammeRoute
+  '/vivier': typeof AppVivierRoute
+  '/candidatures/$id': typeof AppCandidaturesIdRoute
+  '/employes/$id': typeof AppEmployesIdRoute
+  '/fiches-de-poste/$id': typeof AppFichesDePosteIdRoute
   '/candidatures': typeof AppCandidaturesIndexRoute
+  '/employes': typeof AppEmployesIndexRoute
+  '/fiches-de-poste': typeof AppFichesDePosteIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
+  '/_app/dashboard': typeof AppDashboardRoute
+  '/_app/demandes-de-poste': typeof AppDemandesDePosteRoute
+  '/_app/departs': typeof AppDepartsRoute
+  '/_app/entretiens': typeof AppEntretiensRoute
+  '/_app/formation': typeof AppFormationRoute
+  '/_app/habilitations': typeof AppHabilitationsRoute
+  '/_app/integration': typeof AppIntegrationRoute
+  '/_app/offres': typeof AppOffresRoute
+  '/_app/organigramme': typeof AppOrganigrammeRoute
+  '/_app/vivier': typeof AppVivierRoute
+  '/_app/candidatures/$id': typeof AppCandidaturesIdRoute
+  '/_app/employes/$id': typeof AppEmployesIdRoute
+  '/_app/fiches-de-poste/$id': typeof AppFichesDePosteIdRoute
   '/_app/candidatures/': typeof AppCandidaturesIndexRoute
+  '/_app/employes/': typeof AppEmployesIndexRoute
+  '/_app/fiches-de-poste/': typeof AppFichesDePosteIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/candidatures/'
+  fullPaths:
+    | '/'
+    | '/dashboard'
+    | '/demandes-de-poste'
+    | '/departs'
+    | '/entretiens'
+    | '/formation'
+    | '/habilitations'
+    | '/integration'
+    | '/offres'
+    | '/organigramme'
+    | '/vivier'
+    | '/candidatures/$id'
+    | '/employes/$id'
+    | '/fiches-de-poste/$id'
+    | '/candidatures/'
+    | '/employes/'
+    | '/fiches-de-poste/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/candidatures'
-  id: '__root__' | '/' | '/_app' | '/_app/candidatures/'
+  to:
+    | '/'
+    | '/dashboard'
+    | '/demandes-de-poste'
+    | '/departs'
+    | '/entretiens'
+    | '/formation'
+    | '/habilitations'
+    | '/integration'
+    | '/offres'
+    | '/organigramme'
+    | '/vivier'
+    | '/candidatures/$id'
+    | '/employes/$id'
+    | '/fiches-de-poste/$id'
+    | '/candidatures'
+    | '/employes'
+    | '/fiches-de-poste'
+  id:
+    | '__root__'
+    | '/'
+    | '/_app'
+    | '/_app/dashboard'
+    | '/_app/demandes-de-poste'
+    | '/_app/departs'
+    | '/_app/entretiens'
+    | '/_app/formation'
+    | '/_app/habilitations'
+    | '/_app/integration'
+    | '/_app/offres'
+    | '/_app/organigramme'
+    | '/_app/vivier'
+    | '/_app/candidatures/$id'
+    | '/_app/employes/$id'
+    | '/_app/fiches-de-poste/$id'
+    | '/_app/candidatures/'
+    | '/_app/employes/'
+    | '/_app/fiches-de-poste/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -71,6 +259,76 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_app/dashboard': {
+      id: '/_app/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AppDashboardRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/demandes-de-poste': {
+      id: '/_app/demandes-de-poste'
+      path: '/demandes-de-poste'
+      fullPath: '/demandes-de-poste'
+      preLoaderRoute: typeof AppDemandesDePosteRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/departs': {
+      id: '/_app/departs'
+      path: '/departs'
+      fullPath: '/departs'
+      preLoaderRoute: typeof AppDepartsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/entretiens': {
+      id: '/_app/entretiens'
+      path: '/entretiens'
+      fullPath: '/entretiens'
+      preLoaderRoute: typeof AppEntretiensRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/formation': {
+      id: '/_app/formation'
+      path: '/formation'
+      fullPath: '/formation'
+      preLoaderRoute: typeof AppFormationRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/habilitations': {
+      id: '/_app/habilitations'
+      path: '/habilitations'
+      fullPath: '/habilitations'
+      preLoaderRoute: typeof AppHabilitationsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/integration': {
+      id: '/_app/integration'
+      path: '/integration'
+      fullPath: '/integration'
+      preLoaderRoute: typeof AppIntegrationRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/offres': {
+      id: '/_app/offres'
+      path: '/offres'
+      fullPath: '/offres'
+      preLoaderRoute: typeof AppOffresRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/organigramme': {
+      id: '/_app/organigramme'
+      path: '/organigramme'
+      fullPath: '/organigramme'
+      preLoaderRoute: typeof AppOrganigrammeRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/vivier': {
+      id: '/_app/vivier'
+      path: '/vivier'
+      fullPath: '/vivier'
+      preLoaderRoute: typeof AppVivierRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/candidatures/': {
       id: '/_app/candidatures/'
       path: '/candidatures'
@@ -78,15 +336,80 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCandidaturesIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/candidatures/$id': {
+      id: '/_app/candidatures/$id'
+      path: '/candidatures/$id'
+      fullPath: '/candidatures/$id'
+      preLoaderRoute: typeof AppCandidaturesIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/employes/': {
+      id: '/_app/employes/'
+      path: '/employes'
+      fullPath: '/employes/'
+      preLoaderRoute: typeof AppEmployesIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/employes/$id': {
+      id: '/_app/employes/$id'
+      path: '/employes/$id'
+      fullPath: '/employes/$id'
+      preLoaderRoute: typeof AppEmployesIdRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/fiches-de-poste/': {
+      id: '/_app/fiches-de-poste/'
+      path: '/fiches-de-poste'
+      fullPath: '/fiches-de-poste/'
+      preLoaderRoute: typeof AppFichesDePosteIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/fiches-de-poste/$id': {
+      id: '/_app/fiches-de-poste/$id'
+      path: '/fiches-de-poste/$id'
+      fullPath: '/fiches-de-poste/$id'
+      preLoaderRoute: typeof AppFichesDePosteIdRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppDashboardRoute: typeof AppDashboardRoute
+  AppDemandesDePosteRoute: typeof AppDemandesDePosteRoute
+  AppDepartsRoute: typeof AppDepartsRoute
+  AppEntretiensRoute: typeof AppEntretiensRoute
+  AppFormationRoute: typeof AppFormationRoute
+  AppHabilitationsRoute: typeof AppHabilitationsRoute
+  AppIntegrationRoute: typeof AppIntegrationRoute
+  AppOffresRoute: typeof AppOffresRoute
+  AppOrganigrammeRoute: typeof AppOrganigrammeRoute
+  AppVivierRoute: typeof AppVivierRoute
+  AppCandidaturesIdRoute: typeof AppCandidaturesIdRoute
+  AppEmployesIdRoute: typeof AppEmployesIdRoute
+  AppFichesDePosteIdRoute: typeof AppFichesDePosteIdRoute
   AppCandidaturesIndexRoute: typeof AppCandidaturesIndexRoute
+  AppEmployesIndexRoute: typeof AppEmployesIndexRoute
+  AppFichesDePosteIndexRoute: typeof AppFichesDePosteIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppDashboardRoute: AppDashboardRoute,
+  AppDemandesDePosteRoute: AppDemandesDePosteRoute,
+  AppDepartsRoute: AppDepartsRoute,
+  AppEntretiensRoute: AppEntretiensRoute,
+  AppFormationRoute: AppFormationRoute,
+  AppHabilitationsRoute: AppHabilitationsRoute,
+  AppIntegrationRoute: AppIntegrationRoute,
+  AppOffresRoute: AppOffresRoute,
+  AppOrganigrammeRoute: AppOrganigrammeRoute,
+  AppVivierRoute: AppVivierRoute,
+  AppCandidaturesIdRoute: AppCandidaturesIdRoute,
+  AppEmployesIdRoute: AppEmployesIdRoute,
+  AppFichesDePosteIdRoute: AppFichesDePosteIdRoute,
   AppCandidaturesIndexRoute: AppCandidaturesIndexRoute,
+  AppEmployesIndexRoute: AppEmployesIndexRoute,
+  AppFichesDePosteIndexRoute: AppFichesDePosteIndexRoute,
 }
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
