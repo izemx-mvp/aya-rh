@@ -15,6 +15,8 @@ import { Route as AppDashboardRouteImport } from './routes/_app/dashboard'
 import { Route as AppDemandesDePosteRouteImport } from './routes/_app/demandes-de-poste'
 import { Route as AppDepartsRouteImport } from './routes/_app/departs'
 import { Route as AppEntretiensRouteImport } from './routes/_app/entretiens'
+import { Route as AppFormationRouteImport } from './routes/_app/formation'
+import { Route as AppHabilitationsRouteImport } from './routes/_app/habilitations'
 import { Route as AppIntegrationRouteImport } from './routes/_app/integration'
 import { Route as AppOffresRouteImport } from './routes/_app/offres'
 import { Route as AppOrganigrammeRouteImport } from './routes/_app/organigramme'
@@ -53,6 +55,16 @@ const AppDepartsRoute = AppDepartsRouteImport.update({
 const AppEntretiensRoute = AppEntretiensRouteImport.update({
   id: '/entretiens',
   path: '/entretiens',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFormationRoute = AppFormationRouteImport.update({
+  id: '/formation',
+  path: '/formation',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppHabilitationsRoute = AppHabilitationsRouteImport.update({
+  id: '/habilitations',
+  path: '/habilitations',
   getParentRoute: () => AppRoute,
 } as any)
 const AppIntegrationRoute = AppIntegrationRouteImport.update({
@@ -112,6 +124,8 @@ export interface FileRoutesByFullPath {
   '/demandes-de-poste': typeof AppDemandesDePosteRoute
   '/departs': typeof AppDepartsRoute
   '/entretiens': typeof AppEntretiensRoute
+  '/formation': typeof AppFormationRoute
+  '/habilitations': typeof AppHabilitationsRoute
   '/integration': typeof AppIntegrationRoute
   '/offres': typeof AppOffresRoute
   '/organigramme': typeof AppOrganigrammeRoute
@@ -129,6 +143,8 @@ export interface FileRoutesByTo {
   '/demandes-de-poste': typeof AppDemandesDePosteRoute
   '/departs': typeof AppDepartsRoute
   '/entretiens': typeof AppEntretiensRoute
+  '/formation': typeof AppFormationRoute
+  '/habilitations': typeof AppHabilitationsRoute
   '/integration': typeof AppIntegrationRoute
   '/offres': typeof AppOffresRoute
   '/organigramme': typeof AppOrganigrammeRoute
@@ -148,6 +164,8 @@ export interface FileRoutesById {
   '/_app/demandes-de-poste': typeof AppDemandesDePosteRoute
   '/_app/departs': typeof AppDepartsRoute
   '/_app/entretiens': typeof AppEntretiensRoute
+  '/_app/formation': typeof AppFormationRoute
+  '/_app/habilitations': typeof AppHabilitationsRoute
   '/_app/integration': typeof AppIntegrationRoute
   '/_app/offres': typeof AppOffresRoute
   '/_app/organigramme': typeof AppOrganigrammeRoute
@@ -167,6 +185,8 @@ export interface FileRouteTypes {
     | '/demandes-de-poste'
     | '/departs'
     | '/entretiens'
+    | '/formation'
+    | '/habilitations'
     | '/integration'
     | '/offres'
     | '/organigramme'
@@ -184,6 +204,8 @@ export interface FileRouteTypes {
     | '/demandes-de-poste'
     | '/departs'
     | '/entretiens'
+    | '/formation'
+    | '/habilitations'
     | '/integration'
     | '/offres'
     | '/organigramme'
@@ -202,6 +224,8 @@ export interface FileRouteTypes {
     | '/_app/demandes-de-poste'
     | '/_app/departs'
     | '/_app/entretiens'
+    | '/_app/formation'
+    | '/_app/habilitations'
     | '/_app/integration'
     | '/_app/offres'
     | '/_app/organigramme'
@@ -261,6 +285,20 @@ declare module '@tanstack/react-router' {
       path: '/entretiens'
       fullPath: '/entretiens'
       preLoaderRoute: typeof AppEntretiensRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/formation': {
+      id: '/_app/formation'
+      path: '/formation'
+      fullPath: '/formation'
+      preLoaderRoute: typeof AppFormationRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/habilitations': {
+      id: '/_app/habilitations'
+      path: '/habilitations'
+      fullPath: '/habilitations'
+      preLoaderRoute: typeof AppHabilitationsRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/integration': {
@@ -341,6 +379,8 @@ interface AppRouteChildren {
   AppDemandesDePosteRoute: typeof AppDemandesDePosteRoute
   AppDepartsRoute: typeof AppDepartsRoute
   AppEntretiensRoute: typeof AppEntretiensRoute
+  AppFormationRoute: typeof AppFormationRoute
+  AppHabilitationsRoute: typeof AppHabilitationsRoute
   AppIntegrationRoute: typeof AppIntegrationRoute
   AppOffresRoute: typeof AppOffresRoute
   AppOrganigrammeRoute: typeof AppOrganigrammeRoute
@@ -358,6 +398,8 @@ const AppRouteChildren: AppRouteChildren = {
   AppDemandesDePosteRoute: AppDemandesDePosteRoute,
   AppDepartsRoute: AppDepartsRoute,
   AppEntretiensRoute: AppEntretiensRoute,
+  AppFormationRoute: AppFormationRoute,
+  AppHabilitationsRoute: AppHabilitationsRoute,
   AppIntegrationRoute: AppIntegrationRoute,
   AppOffresRoute: AppOffresRoute,
   AppOrganigrammeRoute: AppOrganigrammeRoute,
