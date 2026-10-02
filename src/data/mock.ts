@@ -210,7 +210,7 @@ export const jobAds = Array.from({ length: 18 }, (_, i) => {
   const pos = positions[i % 12];
   const cands = candidates.filter((c) => c.positionId === pos.id).length;
   const st = i < 12 ? "En ligne" : pick(["Brouillon", "Planifiée", "Clôturée", "Expirée"]);
-  return { id: `AN-${pad(i + 1, 4)}`, demandeId: "", ficheVersion: "" as string,, title: pos.title + (i >= 12 ? " (2025)" : ""), positionId: pos.id, site: pos.site, status: st, published: daysAgo(int(5, 60)).toISOString(), closing: daysFrom(int(-20, 40)).toISOString(), views: int(300, 4200), applications: i < 12 ? cands : int(10, 60), channels: { LinkedIn: int(10, 60), Indeed: int(5, 40), "Emploi.ma": int(5, 40), Rekrute: int(5, 40) } };
+  return { id: `AN-${pad(i + 1, 4)}`, demandeId: "", ficheVersion: "" as string, title: pos.title + (i >= 12 ? " (2025)" : ""), positionId: pos.id, site: pos.site, status: st, published: daysAgo(int(5, 60)).toISOString(), closing: daysFrom(int(-20, 40)).toISOString(), views: int(300, 4200), applications: i < 12 ? cands : int(10, 60), channels: { LinkedIn: int(10, 60), Indeed: int(5, 40), "Emploi.ma": int(5, 40), Rekrute: int(5, 40) } };
 });
 
 // ---------- Entretiens ----------
